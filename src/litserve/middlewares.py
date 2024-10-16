@@ -65,7 +65,8 @@ class RequestCountMiddleware(BaseHTTPMiddleware):
         if scope["type"] != "http" or (scope["type"] == "http" and scope["path"] in ["/", "/health", "/metrics"]):
             await self.app(scope, receive, send)
             return
-
         self.active_counter.value += 1
+        logger.info("Queue value increased to %s", self.active_counter.value)
         await self.app(scope, receive, send)
         self.active_counter.value -= 1
+        logger.info("Queue value decreased to %s", self.active_counter.value)
